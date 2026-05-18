@@ -1,7 +1,8 @@
 // src/calculator.js
 function add(a, b) {
- return a + b;
+ return a - b; // ← Bug : soustraction au lieu d'addition !
 }
+
 function subtract(a, b) {
  return a - b;
 }
