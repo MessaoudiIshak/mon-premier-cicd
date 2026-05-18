@@ -1,0 +1,22 @@
+{
+  "name": "tp1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+ "test": "jest --coverage",
+ "test:watch": "jest --watch",
+ "lint": "eslint src/**/*.js",
+ "lint:fix": "eslint src/**/*.js --fix"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.0",
+    "globals": "^17.6.0",
+    "jest": "^30.4.2"
+  }
+}
