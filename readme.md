@@ -1,0 +1,1 @@
+[![CI Pipeline](https://github.com/MessaoudiIshak/mon-premier-cicd/actions/workflows/ci.yml/badge.svg)](https://github.com/MessaoudiIshak/mon-premier-cicd/actions)
