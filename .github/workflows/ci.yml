@@ -1,47 +1,72 @@
-name: CI Pipeline
-
-# Déclencheurs : s'exécute à chaque push et pull_request sur main
+name: CI — Lint, Tests & Coverage
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'feature/**' ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch: # Permet le déclenchement manuel depuis l'UI GitHub
+  workflow_dispatch:
 
 jobs:
-  ci:
-    name: Build, Lint & Test
-    runs-on: ubuntu-latest # Machine virtuelle Ubuntu gratuite
-
+# ─── JOB 1 : Lint ───────────────────────────────
+  lint:
+    name: 🔍 Lint ESLint
+    runs-on: ubuntu-latest
     steps:
-      # Étape 1 : Télécharger le code du repo
-      - name: Checkout du code
+      - name: Checkout
         uses: actions/checkout@v4
-
-      # Étape 2 : Installer Node.js 18
       - name: Setup Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm' # Cache les dépendances pour accélérer les prochains runs
-
-      # Étape 3 : Installer les dépendances
+          cache: 'npm'
       - name: Installation des dépendances
-        run: npm ci # Plus strict que npm install : respecte package-lock.json
-
-      # Étape 4 : Vérifier la qualité du code
-      - name: Lint ESLint
+        run: npm ci
+      - name: Vérification ESLint
         run: npm run lint
 
-      # Étape 5 : Exécuter les tests avec couverture
-      - name: Tests unitaires
-        run: npm test
-
-      # Étape 6 : Archiver le rapport de couverture
+# ─── JOB 2 : Tests avec matrice ─────────────────
+  test:
+    name: 🧪 Tests Node.js ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Installation des dépendances
+        run: npm ci
+      - name: Tests unitaires + couverture
+        run: npm run test:ci
       - name: Upload rapport de couverture
         uses: actions/upload-artifact@v4
-        if: always() # Archiver même si les tests échouent
+        if: always()
         with:
-          name: coverage-report
+          name: coverage-node-${{ matrix.node-version }}
           path: coverage/
-          retention-days: 7
+          retention-days: 14
+
+# ─── JOB 3 : Résumé final ────────────────────────
+  ci-success:
+    name: ✅ CI complet
+    runs-on: ubuntu-latest
+    needs: [ lint, test ]
+    if: always()
+    steps:
+      - name: Vérifier que tout est vert
+        run: |
+          if [ '${{ needs.lint.result }}' != 'success' ]; then
+            echo 'Lint a échoué !'
+            exit 1
+          fi
+          if [ '${{ needs.test.result }}' != 'success' ]; then
+            echo 'Tests ont échoué !'
+            exit 1
+          fi
+          echo 'CI entièrement vert ✓'

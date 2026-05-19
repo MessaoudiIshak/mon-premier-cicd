@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
- "test": "jest --coverage",
- "test:watch": "jest --watch",
- "lint": "eslint src/**/*.js",
- "lint:fix": "eslint src/**/*.js --fix"
-},
+ "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
