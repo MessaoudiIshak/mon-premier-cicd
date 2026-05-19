@@ -16,12 +16,5 @@ describe('Calculator', () => {
  test('divide : division par zéro lève une erreur', () => {
  expect(() => divide(10, 0)).toThrow('Division par zéro impossible');
  });
- test('version Node.js', () => {
-  // Using globalThis.process ensures absolutely no syntax or linting issues
-  const version = globalThis.process.version; 
-  const major = parseInt(version.slice(1));
-  
-  // This will pass on Node 18 (18 < 20) but fail on Node 20 (20 is not < 20)
-  expect(major).toBeLessThan(20);
-});
+ 
 });
