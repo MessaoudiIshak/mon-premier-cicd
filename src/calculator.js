@@ -1,10 +1,8 @@
 // CORRECTION :
 function add(a, b) {
-  if (a === ) { // <-- This is completely broken syntax! It will crash the linter instantly.
-    return 0;
-  }
-  return a + b;
+ return a + b; // ← Correction : addition
 }
+
 
 function subtract(a, b) {
  return a - b;
