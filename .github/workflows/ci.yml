@@ -1,91 +1,76 @@
-name: CI — Lint, Tests & Coverage
+name: CI/CD — Tests, Build & Push Docker
 on:
   push:
-    branches: [ main, 'feature/**' ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-# ─── JOB 1 : Lint ───────────────────────────────
+  # ─── JOB 1 : Lint ─────────────────────────────────
   lint:
-    name: 🔍 Lint ESLint
+    name: 🔍 Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - name: Installation des dépendances
-        run: npm ci
-      - name: Vérification ESLint
-        run: npm run lint
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npm run lint
 
-# ─── JOB 2 : Tests avec matrice ─────────────────
+  # ─── JOB 2 : Tests ────────────────────────────────
   test:
-    name: 🧪 Tests Node.js ${{ matrix.node-version }}
+    name: 🧪 Tests
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         node-version: [18, 20]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Installation des dépendances
-        run: npm ci
-      - name: Tests unitaires + couverture
-        run: npm run test:ci
+      - run: npm ci
+      - run: npm test
 
-      # 📊 Étape insérée ici : Résumé de couverture direct dans les logs
-      - name: Résumé de couverture
-        if: always()
-        run: |
-          echo '## 📊 Couverture de code — Node ${{ matrix.node-version }}' >> $GITHUB_STEP_SUMMARY
-          if [ -f coverage/coverage-summary.json ]; then
-            cat coverage/coverage-summary.json | node -e "
-              const data = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
-              const t = data.total;
-              console.log('| Metric | Coverage |');
-              console.log('|--------|----------|');
-              console.log('| Statements | ' + t.statements.pct + '% |');
-              console.log('| Branches | ' + t.branches.pct + '% |');
-              console.log('| Functions | ' + t.functions.pct + '% |');
-              console.log('| Lines | ' + t.lines.pct + '% |');
-            " >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Upload rapport de couverture
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-node-${{ matrix.node-version }}
-          path: coverage/
-          retention-days: 14
-
-# ─── JOB 3 : Résumé final ────────────────────────
-  ci-success:
-    name: ✅ CI complet
+  # ─── JOB 3 : Build & Push Docker ──────────────────
+  docker:
+    name: 🐳 Docker Build & Push
     runs-on: ubuntu-latest
     needs: [ lint, test ]
-    if: always()
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Vérifier que tout est vert
-        run: |
-          if [ '${{ needs.lint.result }}' != 'success' ]; then
-            echo 'Lint a échoué !'
-            exit 1
-          fi
-          if [ '${{ needs.test.result }}' != 'success' ]; then
-            echo 'Tests ont échoué !'
-            exit 1
-          fi
-          echo 'CI entièrement vert ✓'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login sur GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extraire les métadonnées
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest
+      - name: Build & Push l'image Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

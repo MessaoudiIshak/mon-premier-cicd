@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
+  "scripts": {
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage",
@@ -19,5 +19,8 @@
     "eslint": "^10.4.0",
     "globals": "^17.6.0",
     "jest": "^30.4.2"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
