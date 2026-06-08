@@ -1,9 +1,10 @@
 const express = require('express');
+const { version } = require('../package.json');
 const { add, subtract, multiply, divide } = require('./calculator');
 const app = express();
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', version: '1.0.0' });
+  res.json({ status: 'ok', version });
 });
 
 app.get('/calc/:op/:a/:b', (req, res) => {

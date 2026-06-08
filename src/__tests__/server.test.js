@@ -1,11 +1,12 @@
 const request = require('supertest');
 const app = require('../server');
+const { version } = require('../../package.json');
 
 describe('GET /health', () => {
   test('returns 200 with status ok', async () => {
     const res = await request(app).get('/health');
     expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({ status: 'ok', version: '1.0.0' });
+    expect(res.body).toEqual({ status: 'ok', version });
   });
 });
 
