@@ -10,7 +10,7 @@ RUN npm test
 FROM node:18-alpine AS prod-deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # ═══ STAGE 3 : RUNTIME ═════════════════════════════
 FROM node:18-alpine AS runtime
