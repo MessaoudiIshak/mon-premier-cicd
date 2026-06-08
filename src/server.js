@@ -1,14 +1,11 @@
 const express = require('express');
 const { add, subtract, multiply, divide } = require('./calculator');
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// 1. Health check route to verify the app is alive
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', version: '1.0.0' });
 });
 
-// 2. Calculator API endpoint: routing operations dynamically
 app.get('/calc/:op/:a/:b', (req, res) => {
   const { op, a, b } = req.params;
   const ops = { add, subtract, multiply, divide };
@@ -20,6 +17,9 @@ app.get('/calc/:op/:a/:b', (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
 
 module.exports = app;
