@@ -6,12 +6,18 @@ RUN npm ci
 COPY . .
 RUN npm test
 
-# ═══ STAGE 2 : RUNTIME ═════════════════════════════
+# ═══ STAGE 2 : PRODUCTION DEPENDENCIES ═════════════
+FROM node:18-alpine AS prod-deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# ═══ STAGE 3 : RUNTIME ═════════════════════════════
 FROM node:18-alpine AS runtime
 WORKDIR /app
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/src ./src
-RUN npm ci --omit=dev
 
 USER node
 EXPOSE 3000

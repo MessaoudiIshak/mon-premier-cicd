@@ -30,10 +30,11 @@ jobs:
       - name: Build and Push Versioned Image
         run: |
           VERSION=${{ github.ref_name }}
-          docker build -t ghcr.io/${{ github.repository }}:$VERSION .
-          docker build -t ghcr.io/${{ github.repository }}:latest .
-          docker push ghcr.io/${{ github.repository }}:$VERSION
-          docker push ghcr.io/${{ github.repository }}:latest
+          IMAGE=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t ${IMAGE}:${VERSION} .
+          docker tag ${IMAGE}:${VERSION} ${IMAGE}:latest
+          docker push ${IMAGE}:${VERSION}
+          docker push ${IMAGE}:latest
 
       - name: Generate Changelog Markdown
         id: changelog
