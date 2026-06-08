@@ -11,7 +11,7 @@ FROM node:18-alpine AS runtime
 WORKDIR /app
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/src ./src
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 USER node
 EXPOSE 3000
