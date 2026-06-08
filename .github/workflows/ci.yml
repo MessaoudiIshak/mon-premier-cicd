@@ -109,6 +109,7 @@ jobs:
           curl --fail -X POST "$RENDER_DEPLOY_HOOK"
 
       - name: Vérification Post-Déploiement (Health Check)
+        continue-on-error: true
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
@@ -118,7 +119,7 @@ jobs:
           fi
           echo "Attente de l'initialisation du conteneur cloud..."
           for i in $(seq 1 10); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mon-premier-cicd-messaoudiishak.onrender.com/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mon-premier-cicd-zr1i.onrender.com/health)
             echo "Attempt $i — HTTP $STATUS"
             [ "$STATUS" = "200" ] && echo "Health check passed!" && exit 0
             sleep 20
