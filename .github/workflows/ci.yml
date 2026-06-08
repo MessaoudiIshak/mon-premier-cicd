@@ -98,12 +98,24 @@ jobs:
     environment: production
     steps:
       - name: Déclencher la mise en ligne sur Render
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
-          echo "Validation manuelle reçue. Notification de l'infrastructure de production..."
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
-          
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "RENDER_DEPLOY_HOOK not configured — skipping deploy trigger"
+            exit 0
+          fi
+          echo "Déclenchement du déploiement Render..."
+          curl --fail -X POST "$RENDER_DEPLOY_HOOK"
+
       - name: Vérification Post-Déploiement (Health Check)
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "Render not configured — skipping health check"
+            exit 0
+          fi
           echo "Attente de l'initialisation du conteneur cloud..."
           for i in $(seq 1 10); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mon-premier-cicd-messaoudiishak.onrender.com/health)
