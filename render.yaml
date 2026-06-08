@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mon-premier-cicd
+    env: node
+    plan: free
+    buildCommand: npm ci --omit=dev --ignore-scripts
+    startCommand: node src/server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
