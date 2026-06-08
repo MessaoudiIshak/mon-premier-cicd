@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import globals from "globals";
 import { defineConfig } from "eslint/config";
+import eslintConfigPrettier from "eslint-config-prettier";
 
 export default defineConfig([
   { 
@@ -10,10 +11,20 @@ export default defineConfig([
     languageOptions: { 
       globals: {
         ...globals.browser,
-        ...globals.node // 👈 THIS LINE RIGHT HERE tells ESLint that 'process' is totally fine!
+        ...globals.node
       } 
     } 
   },
   { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
   { files: ["**/__tests__/**/*.js", "**/*.test.js"], languageOptions: { globals: globals.jest } },
+  {
+    files: ["**/*.js"],
+    rules: {
+      "no-var": "error",
+      "prefer-const": "warn",
+      "eqeqeq": ["error", "always"],
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+    }
+  },
+  eslintConfigPrettier
 ]);
