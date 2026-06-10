@@ -1,0 +1,10 @@
+# Trivy ignore file — CVEs suppressed with justification
+# Format: CVE-XXXX-XXXXX  # reason | reviewed: YYYY-MM-DD | next review: YYYY-MM-DD
+#
+# Add entries here ONLY when:
+# 1. No upstream fix exists (ignore-unfixed flag already handles this globally)
+# 2. The CVE does not apply to our runtime usage
+# 3. A mitigation is in place
+#
+# Example (uncomment and fill in when needed):
+# CVE-2024-XXXXX  # node:18-alpine base image, no fix available | reviewed: 2026-06-10 | next review: 2026-09-10

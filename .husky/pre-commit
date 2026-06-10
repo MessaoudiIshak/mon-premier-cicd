@@ -1,1 +1,11 @@
 npm test
+
+# Secret detection — requires gitleaks installed locally
+# Install: https://github.com/gitleaks/gitleaks#installing
+if command -v gitleaks > /dev/null 2>&1; then
+  gitleaks protect --staged -v
+else
+  echo "⚠️  gitleaks non installé — détection de secrets ignorée en local"
+  echo "   CI bloquera si des secrets sont détectés."
+  echo "   Installation: https://github.com/gitleaks/gitleaks#installing"
+fi
