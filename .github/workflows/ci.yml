@@ -89,7 +89,7 @@ jobs:
             type=sha,prefix=sha-
             type=raw,value=latest
       - name: Build & Push l'image Docker
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
