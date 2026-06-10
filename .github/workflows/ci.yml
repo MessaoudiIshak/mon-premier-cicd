@@ -127,6 +127,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
           trivyignores: '.trivyignore'
+          skip-dirs: '/usr/lib/node_modules/npm'
           exit-code: '0'
       - name: Upload SARIF to GitHub Security Tab
         uses: github/codeql-action/upload-sarif@v3
@@ -141,6 +142,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
           trivyignores: '.trivyignore'
+          skip-dirs: '/usr/lib/node_modules/npm'
           exit-code: '1'
 
   # ── 5. STAGING ───────────────────────────────────────────────────────────

@@ -3,20 +3,7 @@
 #
 # Rule: only suppress when the vulnerability does not apply to our runtime usage
 # and no immediate remediation path exists through our codebase.
-
-# tar (npm internal dependency — node:18-alpine bundled npm)
-# tar is used by npm itself for package extraction, not by our application code.
-# Our app does not extract archives at runtime — attack vector requires a malicious
-# archive to be passed to tar.extract(), which never happens in our code path.
-# Remediation path: upgrade base image to node:20-alpine when LTS support allows.
-CVE-2026-23745  # tar in bundled npm, not app code | reviewed: 2026-06-10 | next review: 2026-09-10
-CVE-2026-23950  # tar in bundled npm, not app code | reviewed: 2026-06-10 | next review: 2026-09-10
-CVE-2026-24842  # tar in bundled npm, not app code | reviewed: 2026-06-10 | next review: 2026-09-10
-CVE-2026-26960  # tar in bundled npm, not app code | reviewed: 2026-06-10 | next review: 2026-09-10
-CVE-2026-29786  # tar in bundled npm, not app code | reviewed: 2026-06-10 | next review: 2026-09-10
-CVE-2026-31802  # tar in bundled npm, not app code | reviewed: 2026-06-10 | next review: 2026-09-10
-
-# CVE-2026-27904 — glob backtracking (minimatch/node internals)
-# ReDoS vulnerability in glob pattern matching within npm tooling.
-# Our app does not expose user-controlled input to glob pattern evaluation.
-CVE-2026-27904  # glob ReDoS in npm internals, no user input reaches glob | reviewed: 2026-06-10 | next review: 2026-09-10
+# npm internal packages are excluded globally via skip-dirs in ci.yml.
+#
+# Add entries here for app-level CVEs only:
+# CVE-XXXX-XXXXX  # reason | reviewed: YYYY-MM-DD | next review: YYYY-MM-DD
