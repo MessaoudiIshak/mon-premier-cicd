@@ -16,7 +16,7 @@ RUN npm ci --omit=dev --ignore-scripts
 FROM node:18-alpine AS runtime
 WORKDIR /app
 COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/src ./src
 
 USER node
